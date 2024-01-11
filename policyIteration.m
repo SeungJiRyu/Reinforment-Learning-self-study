@@ -16,7 +16,7 @@ discount_factor = 1;
 value_table = zeros(row,col);
 
 % Episode iterations : 1000 times
-for k = 1:500
+for k = 1:3
     % Initialize environment coordinate
     env = env.reset();
     
@@ -52,8 +52,8 @@ end
 disp("              <A Value table>")
 disp(value_table)
 
-% Make policy table
-policy_table = string(zeros(row,col));
+% Policy Improvement
+policy_table = string(zeros(row,col)); % initialize a string matrix
 for i = 1:row
     for j = 1:col
         % Prevent contradiction related to coordinate boundary
@@ -81,6 +81,7 @@ for i = 1:row
             j_plus_one = j+1;
         end
 
+        % Greedy policy Improvement(solving Bellman expectation equation)
         if value_table(i_minus_one,j) > value_table(i_plus_one,j)
             policy_table_row = 0; % mean up
             row_value_big = value_table(i_minus_one,j); 
@@ -96,7 +97,8 @@ for i = 1:row
             policy_table_col = 1; % mean right
             col_value_big = value_table(i,j_plus_one);
         end
-
+        
+        % Visulaization
         if row_value_big == col_value_big
             policy_table(i,j) = "↓→";
         elseif row_value_big > col_value_big
