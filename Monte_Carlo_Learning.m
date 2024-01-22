@@ -2,58 +2,67 @@ clear
 close all
 clc
 
-global row
-global col
-
 % Enter table size value
-row = 5;
-col = 5;
+row = 4;
+col = 4;
 
 env = Environment(row,col,1,1,0);
 
-policy = 0.25;
 state_transition_prob = 1;
-discount_factor = 1;
+discount_factor = 0.8;
 value_table = zeros(row,col);
+step_size = 0.001; % alpha
+history = []; % matrix for calculating return Gt
 
-% Episode iterations : 1000 times
-for k = 1:100
+k = 1000; % The number of iterations
+
+% Episode Iterations : k times
+for i = 1:k
     % Initialize environment coordinate
     env = env.reset();
-    
-    % Policy Evaluation
+
+    % Sampling
     while ~(env.is_done)
-        next_value_table = zeros(col,row);
-        for i = 1:row
-            for j = 1:col
-                % Policy Evaluation
-                for action = [0,1,2,3]
-                    env.StateX = i;
-                    env.StateY = j;
-                    [next_x,next_y] = env.move_step(action);
-
-                    % Calculate reward
-                    if (i == row) && (j == col)
-                        reward = 0;
-                    else
-                        reward = -1;
-                    end
-
-                    % Policy Evaluation
-                    next_value_table(i,j) = next_value_table(i,j) + policy*(reward + discount_factor*state_transition_prob ...
-                         *value_table(next_x,next_y));
-                end
-            end
+        % Take random action
+        random_action = select_action();
+        [next_x, next_y] = env.move_step(random_action);
+        % Determine reward function
+        if (next_x == col) && (next_y == row)
+            reward = 0;
+        else
+            reward = -1;
         end
-        next_value_table(row,col) = 0;
-        value_table = next_value_table;
+        % Store episodes
+        history = [history ; [next_x, next_y, reward]];
+        % Update state x and y
+        env.StateX = next_x; env.StateY = next_y;
+    end
+    
+    % Monte-Carlo Algorithm
+    [row_num,col_num] = size(history);
+    cum_reward = 0;
+    for j = 1:row_num
+        x = history(row_num-j+1,1); y = history(row_num-j+1,2);
+        if ~((x == row)&&(y == col))
+            value_table(x,y) = value_table(x,y) + step_size * (cum_reward - value_table(x,y));
+        else
+            value_table(x,y) = 0;
+        end
+
+        % Determine reward function
+        if (x == col) && (y == row)
+            reward = 0;
+        else
+            reward = -1;
+        end
+        cum_reward = cum_reward + discount_factor * reward;
     end
 end
 
 disp("              <A Value table>")
 disp(value_table)
 
-% Policy Improvement
+% Policy Improvement using Monte-Carlo Algorithm
 policy_table = string(zeros(row,col)); % initialize a string matrix
 for i = 1:row
     for j = 1:col
@@ -118,7 +127,21 @@ for i = 1:row
     end
 end
 
-policy_table(row,col)  = "-";
-disp("              <A Policy table>")
-disp(policy_table)
+Visualize_Policy_table(row,col,value_table);
+
+% Make random action(policy = 0.25)
+function a = select_action()
+    x = rand;
+    if x < 0.25
+        a = 0;
+    elseif (x >= 0.25) && (x < 0.5)
+        a = 1;
+    elseif (x >= 0.5) && (x < 0.75)
+        a = 2;
+    else
+        a = 3;
+    end
+end
+
+
 
