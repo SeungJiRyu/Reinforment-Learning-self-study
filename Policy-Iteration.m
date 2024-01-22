@@ -5,6 +5,7 @@ clc
 global row
 global col
 
+% Enter table size value
 row = 5;
 col = 5;
 
