@@ -16,7 +16,7 @@ discount_factor = 1;
 value_table = zeros(row,col);
 
 % Episode iterations : 1000 times
-for k = 1:3
+for k = 1:100
     % Initialize environment coordinate
     env = env.reset();
     
@@ -99,7 +99,7 @@ for i = 1:row
         end
         
         % Visulaization
-        if row_value_big == col_value_big
+        if abs(row_value_big - col_value_big) < 10^(-10) % same as (row_value_big == col_value_big)
             policy_table(i,j) = "↓→";
         elseif row_value_big > col_value_big
             if policy_table_row == 0
