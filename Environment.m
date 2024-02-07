@@ -1,7 +1,7 @@
 classdef Environment
     properties
-        row (1,1) int16 = 4
-        column (1,1) int16 = 4
+        row (1,1) int16 
+        column (1,1) int16
         StateX (1,1) int16  = 1
         StateY (1,1) int16  = 1
         done (1,1) int16 = 0
@@ -34,6 +34,7 @@ classdef Environment
             end
             x = a; y = b;
         end
+
 
         function [x,y] = move_up(e)
             if e.StateX >= 2

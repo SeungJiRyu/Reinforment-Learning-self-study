@@ -1,4 +1,4 @@
-classdef SARSA_Agent
+classdef Agent_SARSA
     properties
         step_size (1,1) double = 0.01;
         action (1,1) int16
@@ -8,7 +8,7 @@ classdef SARSA_Agent
     end
 
     methods 
-        function a = SARSA_Agent(row,col,step_size,action,discount_factor,epsilon)
+        function a = Agent_SARSA(row,col,step_size,action,discount_factor,epsilon)
             a.step_size = step_size;
             a.action = action;
             a.discount_factor = discount_factor;
@@ -18,7 +18,7 @@ classdef SARSA_Agent
 
         function updated_q_table = learning(a,StateX,StateY,action,reward,next_StateX,next_StateY,next_action)
             arguments
-                a SARSA_Agent
+                a Agent_SARSA
                 StateX (1,1) int16
                 StateY (1,1) int16
                 action {mustBeMember(action,[0,1,2,3])}
@@ -31,7 +31,7 @@ classdef SARSA_Agent
             next_state_q = a.q_table(next_StateX,next_StateY,(next_action+1));
             
             % Temporal Difference error
-            td = reward + a.discount_factor*(next_state_q-current_q);
+            td = reward + a.discount_factor*next_state_q-current_q;
             new_q = current_q + a.step_size * td;
             a.q_table(StateX,StateY,(action+1)) = new_q;
             updated_q_table = a.q_table;

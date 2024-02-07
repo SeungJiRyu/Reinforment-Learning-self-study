@@ -1,10 +1,12 @@
-function Visualize_selected_policy_SARSA(agent,reward_table,wall)
+function Visualize_selected_policy_SARSA(agent,wall_table,wall,destination)
     [xidx,yidx,~] = size(agent.q_table);
     policy_table = string(zeros(xidx,yidx));
     for i = 1:xidx
         for j = 1:yidx
-            if reward_table(i,j) == wall
+            if wall_table(i,j) == wall
                 policy_table(i,j) = "◼";
+            elseif wall_table(i,j) == destination
+                policy_table(i,j) = "★";
             else
                 if agent.q_table(i,j,1) > agent.q_table(i,j,2)
                     policy_col = 0; % mean up
@@ -48,7 +50,6 @@ function Visualize_selected_policy_SARSA(agent,reward_table,wall)
             end
         end
     end
-    policy_table(xidx,yidx)  = "★";
     disp("              <A Policy table>")
     disp(policy_table)
 end
