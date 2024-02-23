@@ -41,8 +41,8 @@ for i = 1:k
     % Monte-Carlo Algorithm
     [row_num,col_num] = size(history);
     cum_reward = 0;
-    for j = 1:row_num
-        x = history(row_num-j+1,1); y = history(row_num-j+1,2);
+    for j = 1:row_num % Iteration with the number of episodes
+        x = history(row_num-j+1,1); y = history(row_num-j+1,2); % calculating cumulative reward in backward direction
         if ~((x == row)&&(y == col))
             value_table(x,y) = value_table(x,y) + step_size * (cum_reward - value_table(x,y));
         else

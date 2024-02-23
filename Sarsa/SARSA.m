@@ -33,15 +33,17 @@ wall_table(5,5) = wall;
 
 reward_table = ones(row,col) * -1;
 destination = 100; % fix
-reward_table(5,2) = destination;
-wall_table(5,2) = destination;
+x_destination = 5;
+y_destination = 2;
+reward_table(x_destination,y_destination) = destination;
+wall_table(x_destination,y_destination) = destination;
 
-env = Environment_SARSA(row,col,1,1,0,wall_table,destination);
+env = Environment_SARSA(row,col,1,1,0,wall_table,x_destination,y_destination);
 action = 0;
 agent = Agent_SARSA(row,col,step_size,action,discount_factor,epsilon);
 
 % Episode : 2000 times
-for episode = 1:2000
+for episode = 1:3000
     env = env.reset();
     agent.action = select_action();
     while ~(env.is_done)
@@ -55,7 +57,7 @@ for episode = 1:2000
         agent.action = next_action;
     end
     if epsilon > 0.1
-        epsilon = epsilon - 0.03;
+        epsilon = epsilon - 0.0003;
         agent.epsilon = epsilon;
     end
 end
@@ -99,13 +101,13 @@ function a = epsilon_greedy_policy(StateX,StateY,agent,epsilon)
         end
     else
         % Select epsilon greedy policy
-        q_table = [agent.q_table(StateX,StateY,1) ; agent.q_table(StateX,StateY,2); agent.q_table(StateX,StateY,3); agent.q_table(StateX,StateY,4)];
+        q_table = agent.q_table(StateX,StateY,:);
         max_q = max(q_table);
         % prevent situation when same q values exist
         max_idx = find(max_q == q_table);
         random_dix = randi(length(max_idx));
         q_idx = max_idx(random_dix);
 
-        a = q_idx - 1; % convert index for meaning action(0,1,2,3)
+        a = q_idx - 1; % convert index for matching action(0,1,2,3)
     end
 end
